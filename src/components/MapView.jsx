@@ -1,125 +1,174 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import React, { useState, useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import localGeo from '../assets/peru-geo.json';
-import { contarCasosPorDepartamento, obtenerColor, obtenerLeyenda } from '../utils/mapUtils';
+import { obtenerColor, contarCasosPorDepartamento, obtenerCasosPorProvincia } from '../utils/mapUtils';
 
-const MapView = ({ reportes = [], tipoReporte = 'Confirmado', selectedDepartamento = 'Todos' }) => {
+// Helper component to handle zoom and bounds
+function ZoomHandler({ bounds }) {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
+    }
+  }, [bounds, map]);
+  return null;
+}
+
+const MapView = ({ filters, reportes, tipoReporte }) => {
   const [geoData, setGeoData] = useState(null);
-  const [loadError, setLoadError] = useState(null);
+  const [provGeoData, setProvGeoData] = useState(null);
+  const [lastZoomBounds, setLastZoomBounds] = useState(null);
+
+  const selectedDepartamento = filters.departamento;
+  // tipoReporte comes from activeTab in Dashboard (StatsCards)
 
   useEffect(() => {
-    // Try to fetch a full GeoJSON from public/geo/peru_departamentos.geojson first
+    // Load departments
     fetch('/geo/peru_departamentos.geojson')
-      .then(res => {
-        if (!res.ok) throw new Error('no-file');
-        return res.json();
-      })
-      .then(json => {
-        setGeoData(json);
-      })
-      .catch(() => {
-        // Fallback to local asset if it contains coordinates
-        const hasCoords = Array.isArray(localGeo.features) && localGeo.features.some(f => Array.isArray(f.geometry.coordinates) && f.geometry.coordinates.length > 0);
-        if (hasCoords) {
-          setGeoData(localGeo);
-        } else {
-          setGeoData(null);
-          setLoadError('GeoJSON de departamentos no encontrado o vacío. Coloca /public/geo/peru_departamentos.geojson con geometrías.');
-        }
-      });
+      .then((res) => res.json())
+      .then((data) => setGeoData(data))
+      .catch((err) => console.error('Error loading department geojson:', err));
+
+    // Load provinces
+    fetch('/geo/peru_provincias.geojson')
+      .then((res) => res.json())
+      .then((data) => setProvGeoData(data))
+      .catch((err) => console.error('Error loading province geojson:', err));
   }, []);
 
-  const casosPorDep = contarCasosPorDepartamento(reportes, tipoReporte === 'Todos' ? null : tipoReporte);
+  const activeLayers = {
+    sivapre: filters.sivapre,
+    noti: filters.noti,
+    netlab: filters.netlab
+  };
 
-  const style = (feature) => {
-    const rawName = feature.properties.NOMBDEP || feature.properties.NOMDEP || feature.properties.DEPARTAM || feature.properties.DEPARTAMENTO || feature.properties.name || feature.properties.NAME || '';
-    const dep = (rawName || '').toString().toUpperCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const casosPorDep = useMemo(() => contarCasosPorDepartamento(reportes, tipoReporte, activeLayers), [reportes, tipoReporte, activeLayers]);
+
+  const casosPorProv = useMemo(() => {
+    if (selectedDepartamento === 'Todos') return {};
+    return obtenerCasosPorProvincia(selectedDepartamento, reportes, tipoReporte, activeLayers);
+  }, [selectedDepartamento, reportes, tipoReporte, activeLayers]);
+
+  // Normalize string for comparison
+  const normalize = (str) => {
+    if (!str) return '';
+    return str.toString().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  };
+
+  const depStyle = (feature) => {
+    const rawName = feature.properties.NOMBDEP || feature.properties.NOMDEP || feature.properties.DEPARTAM || feature.properties.DEPARTAMENTO || feature.properties.name || '';
+    const dep = normalize(rawName);
+    const targetDep = normalize(selectedDepartamento);
+    const isTarget = selectedDepartamento === 'Todos' || dep === targetDep;
+
+    if (!isTarget) {
+      return {
+        fillColor: '#E5E7EB',
+        weight: 0.5,
+        opacity: 0.2,
+        color: '#ffffff',
+        fillOpacity: 0.1,
+      };
+    }
+
+    if (selectedDepartamento !== 'Todos') {
+      return {
+        fillColor: 'transparent',
+        weight: 3,
+        opacity: 1,
+        color: '#0d6efd',
+        dashArray: '5, 5',
+        fillOpacity: 0,
+      };
+    }
+
     const cantidad = casosPorDep[dep] || 0;
-    const fill = obtenerColor(tipoReporte === 'Todos' ? null : tipoReporte, cantidad);
-    // If a departamento is specifically selected, emphasize it
-    const selected = selectedDepartamento && selectedDepartamento !== 'Todos' && dep === (selectedDepartamento || '').toUpperCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-
     return {
-      fillColor: fill,
-      weight: selected ? 2 : 1,
+      fillColor: obtenerColor(null, cantidad),
+      weight: 1,
       opacity: 1,
-      color: selected ? '#0d6efd' : '#ffffff',
-      dashArray: '',
-      fillOpacity: selected ? 0.95 : 0.85,
+      color: '#ffffff',
+      fillOpacity: 0.85,
     };
   };
 
-  const onEachFeature = (feature, layer) => {
-    const depName = feature.properties.NOMBDEP || feature.properties.NOMDEP || feature.properties.DEPARTAM || feature.properties.DEPARTAMENTO || feature.properties.name || feature.properties.NAME || 'Desconocido';
-    const depUpper = (depName || '').toString().toUpperCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-    const cantidad = casosPorDep[depUpper] || 0;
-    layer.bindPopup(`\n      <strong>${depName}</strong><br/>\n      ${tipoReporte === 'Todos' ? 'Casos totales' : tipoReporte}: ${cantidad}\n    `);
+  const provStyle = (feature) => {
+    const rawDep = feature.properties.FIRST_NOMB || feature.properties.DEPARTAM || feature.properties.DEPARTAMENTO || '';
+    const rawProv = feature.properties.NOMBPROV || feature.properties.PROVINCIA || '';
+
+    const dep = normalize(rawDep);
+    const prov = normalize(rawProv);
+    const targetDep = normalize(selectedDepartamento);
+
+    if (dep !== targetDep) return { stroke: false, fill: false, opacity: 0, fillOpacity: 0 };
+
+    const cantidad = casosPorProv[prov] || 0;
+    return {
+      fillColor: obtenerColor(null, cantidad),
+      weight: 1.5,
+      opacity: 1,
+      color: '#ffffff',
+      fillOpacity: 0.9,
+    };
+  };
+
+  const onEachDep = (feature, layer) => {
+    const name = feature.properties.NOMBDEP || feature.properties.NOMDEP || feature.properties.DEPARTAM || feature.properties.DEPARTAMENTO || feature.properties.name || 'Desconocido';
+    const depNorm = normalize(name);
+    const targetDepNorm = normalize(selectedDepartamento);
+
+    if (selectedDepartamento === 'Todos' || depNorm === targetDepNorm) {
+      const cantidad = casosPorDep[depNorm] || 0;
+      layer.bindPopup(`<strong>${name}</strong><br/>COVID-19 - Casos: <strong>${Math.round(cantidad)}</strong>`);
+
+      if (selectedDepartamento !== 'Todos' && depNorm === targetDepNorm) {
+        setLastZoomBounds(layer.getBounds());
+      }
+    }
+  };
+
+  const onEachProv = (feature, layer) => {
+    const name = feature.properties.NOMBPROV || feature.properties.PROVINCIA || 'Provincia';
+    const provNorm = normalize(name);
+    const cantidad = casosPorProv[provNorm] || 0;
+    layer.bindPopup(`<strong>Provincia: ${name}</strong><br/>Casos estimados: <strong>${Math.round(cantidad)}</strong>`);
   };
 
   return (
-    <div className="card p-3 h-100 border-0">
-      <h5 className="mb-3 fw-bold" style={{fontSize: '1rem'}}>Mapa de Vigilancia Epidemiológica</h5>
-      {loadError && (
-        <div className="alert alert-warning mb-3">{loadError}</div>
-      )}
-      <div style={{ position: 'relative', height: '450px', width: '100%' }}>
-        <MapContainer
-          center={[-12.0, -71.5]}
-          zoom={6}
-          style={{ height: '100%', width: '100%', borderRadius: '8px' }}
-          zoomControl={true}
-          key={tipoReporte + JSON.stringify(casosPorDep)}
-          bounds={[[-18.35, -81.33], [-0.5, -68.65]]}
-          maxBounds={[[-19, -82], [1, -67]]}
-          maxBoundsViscosity={0.9}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <div style={{ height: 'calc(100vh - 180px)', width: '100%', borderRadius: '12px', overflow: 'hidden' }} className="shadow-sm border border-2 border-white bg-light">
+      <MapContainer
+        center={[-9.19, -75.0152]}
+        zoom={6}
+        style={{ height: '100%', width: '100%' }}
+        zoomControl={false}
+        scrollWheelZoom={true}
+        key={selectedDepartamento + tipoReporte + JSON.stringify(casosPorDep)}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        />
+
+        {geoData && (
+          <GeoJSON
+            key={"dep-" + selectedDepartamento}
+            data={geoData}
+            style={depStyle}
+            onEachFeature={onEachDep}
           />
-          {geoData && <GeoJSON data={geoData} style={style} onEachFeature={onEachFeature} />}
-        </MapContainer>
-        
-        {/* Leyenda posicionada en esquina inferior derecha */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '20px',
-            right: '20px',
-            backgroundColor: '#ffffff',
-            padding: '12px 16px',
-            borderRadius: '6px',
-            border: '2px solid #d1d5db',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            zIndex: 400,
-            maxWidth: '220px',
-            fontSize: '0.85rem',
-          }}
-        >
-          <div className="fw-bold mb-2" style={{ fontSize: '0.9rem' }}>
-            Casos de Dengue
-          </div>
-          {obtenerLeyenda().map((item, idx) => (
-            <div key={idx} className="d-flex align-items-center mb-1">
-              <span
-                className="me-2"
-                style={{
-                  display: 'inline-block',
-                  width: '18px',
-                  height: '18px',
-                  backgroundColor: item.color,
-                  borderRadius: '2px',
-                  border: '1px solid #999',
-                }}
-              />
-              <span style={{ fontSize: '0.75rem' }}>
-                {item.rango}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+        )}
+
+        {selectedDepartamento !== 'Todos' && provGeoData && (
+          <GeoJSON
+            key={"prov-" + selectedDepartamento}
+            data={provGeoData}
+            style={provStyle}
+            onEachFeature={onEachProv}
+          />
+        )}
+
+        <ZoomHandler bounds={lastZoomBounds} />
+      </MapContainer>
     </div>
   );
 };

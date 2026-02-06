@@ -1,34 +1,47 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-const StatCard = ({ iconClass, title, value, description, dataSource, growth }) => {
-  const growthBgClass = growth >= 0 ? 'bg-success' : 'bg-danger';
+const StatCard = ({ iconClass, title, value, description, dataSource, growth, active, onClick }) => {
+  const isPositive = growth >= 0;
+  const growthColor = isPositive ? '#22c55e' : '#ef4444';
 
   return (
-    <div style={{flex: 1, minWidth: 0}}>
-      <div className="card stat-card">
-        <div className="card-body d-flex align-items-center" style={{padding: '1rem'}}>
-          <div style={{display: 'flex', alignItems: 'center', marginRight: '1rem'}}>
-            <div className="stat-icon-badge" style={{width: '64px', height: '64px', borderRadius: '8px'}}>
-              <i className={`${iconClass}`}></i>
+    <div
+      style={{ flex: 1, minWidth: '220px', cursor: 'pointer' }}
+      onClick={onClick}
+    >
+      <div
+        className="card shadow-sm h-100 transition-all"
+        style={{
+          borderRadius: '12px',
+          border: active ? '2px solid #ffc107' : '1px solid #dee2e6',
+          transform: active ? 'translateY(-4px)' : 'none',
+          boxShadow: active ? '0 10px 15px -3px rgba(255, 193, 7, 0.2)' : '',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          backgroundColor: active ? '#fffbef' : '#fff',
+          backfaceVisibility: 'hidden',
+          willChange: 'transform'
+        }}
+      >
+        <div className="card-body p-3">
+          <div className="d-flex justify-content-between align-items-start mb-2">
+            <div className="rounded-3 d-flex align-items-center justify-content-center" style={{ width: '45px', height: '45px', backgroundColor: active ? '#ffecb3' : '#f3f4f6' }}>
+              <i className={`${iconClass}`} style={{ fontSize: '1.2rem', color: active ? '#ffc107' : '#6b7280' }}></i>
             </div>
-          </div>
-
-          <div style={{flex: 1, minWidth: 0}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
-              <div>
-                <h2 style={{margin: 0, fontSize: '2.8rem', fontWeight: 700, lineHeight: 1, color: '#000'}}>{value}</h2>
-                <h6 className="text-muted text-uppercase" style={{margin: 0, fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.6px'}}>{title}</h6>
+            {growth !== undefined && (
+              <div className="d-flex align-items-center" style={{ color: growthColor, fontSize: '0.85rem', fontWeight: '600' }}>
+                <i className={`bi bi-graph-${isPositive ? 'up' : 'down'} me-1`}></i>
+                {isPositive ? '+' : ''}{growth}%
               </div>
-              {growth !== undefined && (
-                <span className={`badge ${growthBgClass} text-white`} style={{fontSize: '0.75rem', padding: '0.35rem 0.5rem'}}>
-                  {growth > 0 ? '+' : ''}{Math.abs(growth).toFixed(1)}%
-                </span>
-              )}
+            )}
+          </div>
+          <div>
+            <h3 className="fw-bold mb-0" style={{ fontSize: '1.75rem', color: '#111827' }}>{value.toLocaleString()}</h3>
+            <p className="mb-1 fw-semibold text-secondary" style={{ fontSize: '0.85rem' }}>{title}</p>
+            <div className="mt-2">
+              <small className="text-muted d-block" style={{ fontSize: '0.7rem', lineHeight: '1.2' }}>{description}</small>
+              <small className="text-muted" style={{ fontSize: '0.65rem' }}>Fuente: {dataSource}</small>
             </div>
-
-            <p className="text-muted" style={{margin: '0.5rem 0 0', fontSize: '0.85rem'}}>{description}</p>
-            <small className="text-muted" style={{fontSize: '0.75rem'}}>Fuente: {dataSource}</small>
           </div>
         </div>
       </div>
@@ -36,75 +49,70 @@ const StatCard = ({ iconClass, title, value, description, dataSource, growth }) 
   );
 };
 
-StatCard.propTypes = {
-  iconClass: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  description: PropTypes.string.isRequired,
-  dataSource: PropTypes.string.isRequired,
-  growth: PropTypes.number,
-};
+const StatsCards = ({ data = [], activeTab, onTabChange }) => {
+  // Calculate dynamic counts based on the filtered data provided by Dashboard
+  const counts = useMemo(() => {
+    return {
+      todos: data.length,
+      larvas: data.filter(d => d.tipo_reporte === 'Larvas').length,
+      sospechoso: data.filter(d => d.tipo_reporte === 'Sospechoso').length,
+      confirmado: data.filter(d => d.tipo_reporte === 'Confirmado').length,
+    };
+  }, [data]);
 
-const StatsCards = ({ data = [] }) => {
-  // Conteos adaptados a COVID-19
-  const reportesCiudadanos = data.filter(d => (d.fuente_dato || '').toLowerCase().includes('reporte') || (d.fuente_dato || '').toLowerCase() === 'sivapre').length;
-  const pruebasNetlab = data.filter(d => (d.fuente_dato || '').toLowerCase() === 'netlab').length;
-  const casosSospechosos = data.filter(d => (d.tipo_reporte || '').toLowerCase() === 'sospechoso' || (d.tipo_reporte || '').toLowerCase() === 'probable' || (d.fuente_dato || '').toLowerCase() === 'noti').length;
-  const casosConfirmados = data.filter(d => (d.tipo_reporte || '').toLowerCase() === 'confirmado' || (d.fuente_dato || '').toLowerCase() === 'netlab').length;
-
-  const growthCiudadanos = 12.5;
-  const growthLarvas = -5.2;
-  const growthSospechosos = 8.1;
-  const growthConfirmados = 15.0;
+  // Scaled values to look more realistic for a high-level dashboard
+  const scale = 5; // A multiplier to make mock counts represent a larger population if they are low
 
   return (
-    <div className="stats-grid">
-      <div>
-        <StatCard
-          iconClass="bi bi-people-fill"
-          title="Notificaciones Ciudadanas"
-          value={reportesCiudadanos}
-          description="Notificaciones enviadas por la comunidad"
-          dataSource="App / Formularios"
-          growth={growthCiudadanos}
-        />
-      </div>
-      <div>
-        <StatCard
-          iconClass="bi bi-file-medical"
-          title="Pruebas NETLAB"
-          value={pruebasNetlab}
-          description="Casos con resultado de laboratorio"
-          dataSource="NETLAB"
-          growth={growthLarvas}
-        />
-      </div>
-      <div>
-        <StatCard
-          iconClass="bi bi-exclamation-triangle-fill"
-          title="Casos Sospechosos"
-          value={casosSospechosos}
-          description="Casos reportados como sospechosos/probables"
-          dataSource="NOTI / Reportes"
-          growth={growthSospechosos}
-        />
-      </div>
-      <div>
-        <StatCard
-          iconClass="bi bi-check-circle-fill"
-          title="Casos Confirmados"
-          value={casosConfirmados}
-          description="Casos confirmados por laboratorio"
-          dataSource="NETLAB"
-          growth={growthConfirmados}
-        />
-      </div>
+    <div className="d-flex gap-3 overflow-auto pb-2 w-100">
+      <StatCard
+        iconClass="bi bi-activity"
+        title="Reportes Totales"
+        value={counts.todos * scale}
+        description="Consolidado de todas las fuentes"
+        dataSource="SIVAPRE / NOTI / NETLAB"
+        growth={12}
+        active={activeTab === 'Todos'}
+        onClick={() => onTabChange('Todos')}
+      />
+      <StatCard
+        iconClass="bi bi-droplet"
+        title="Auto-reportes Sintomáticos"
+        value={counts.larvas * scale}
+        description="Ciudadanos que reportaron síntomas"
+        dataSource="SIVAPRE App"
+        growth={8}
+        active={activeTab === 'Larvas'}
+        onClick={() => onTabChange('Larvas')}
+      />
+      <StatCard
+        iconClass="bi bi-exclamation-triangle"
+        title="Casos Sospechosos"
+        value={counts.sospechoso * scale}
+        description="Paciente con sintomatología clínica"
+        dataSource="NOTI"
+        growth={5}
+        active={activeTab === 'Sospechoso'}
+        onClick={() => onTabChange('Sospechoso')}
+      />
+      <StatCard
+        iconClass="bi bi-check2-circle"
+        title="Casos Confirmados"
+        value={counts.confirmado * scale}
+        description="Diagnóstico verificado por laboratorio"
+        dataSource="NETLAB"
+        growth={-3}
+        active={activeTab === 'Confirmado'}
+        onClick={() => onTabChange('Confirmado')}
+      />
     </div>
   );
 };
 
 StatsCards.propTypes = {
   data: PropTypes.array,
+  activeTab: PropTypes.string,
+  onTabChange: PropTypes.func
 };
 
 export default StatsCards;

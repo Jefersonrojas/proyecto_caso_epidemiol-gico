@@ -17,7 +17,9 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -39,12 +41,14 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card {
@@ -152,21 +156,16 @@ body {
 .main-content {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 1.5rem;
-  background-color: var(--light-gray);
+  padding: 0;
+  background-color: #f9fafb;
 }
 
-.content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
+.content-wrapper {
+  padding: 1.5rem;
 }
 
 .stats-container {
-  grid-column: span 12;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .stats-grid {
@@ -176,28 +175,29 @@ body {
   gap: 1rem;
 }
 
-.stats-grid > div {
+.stats-grid>div {
   width: 100%;
 }
 
 .stat-card {
-  min-height: 150px;
+  min-height: 100px;
 }
 
 .stat-card .card-body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.25rem !important;
+  padding: 0.75rem 1rem !important;
 }
 
 .stat-card.variant-accent {
-  border: 1px solid #ffedd5; /* light accent for second card */
+  border: 1px solid #ffedd5;
+  /* light accent for second card */
 }
 
 .map-container {
   grid-column: span 8;
-  min-height: 680px;
+  min-height: 500px;
 }
 
 .side-panel-container .card {
@@ -209,7 +209,7 @@ body {
 
 .side-panel-container {
   grid-column: span 4;
-  min-height: 680px;
+  min-height: 500px;
 }
 
 /* Form styling */
@@ -243,7 +243,7 @@ body {
   border-radius: 0.4rem;
 }
 
-.btn-group > .btn-primary.active {
+.btn-group>.btn-primary.active {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
@@ -257,6 +257,7 @@ body {
   .map-container {
     grid-column: span 12;
   }
+
   .side-panel-container {
     grid-column: span 12;
   }
@@ -266,7 +267,7 @@ body {
   .stats-container {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .filter-group {
     flex-direction: column;
     align-items: flex-start;
@@ -277,15 +278,15 @@ body {
   .stats-container {
     grid-template-columns: 1fr;
   }
-  
+
   .main-content {
     padding: 1rem;
   }
-  
+
   .content-grid {
     gap: 1rem;
   }
-  
+
   .filter-group {
     flex-direction: column;
     align-items: flex-start;

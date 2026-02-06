@@ -14,14 +14,14 @@ const Dashboard = () => {
     departamento: 'Todos',
     provincia: 'Todos',
     distrito: 'Todos',
-    rango: 'Todos', // Nuevo filtro de tiempo: '24h', '7d', '30d', 'Todos'
-    // Layer visibility
-    sivapre: true, // SIVAPRE Criaderos
-    noti: true,    // NOTI Sospechosos
-    netlab: true,  // NETLAB Confirmados
+    rango: 'Todos',
+    sivapre: true,
+    noti: true,
+    netlab: true,
   });
   const [filteredData, setFilteredData] = useState([]);
   const [mapData, setMapData] = useState(peruGeo);
+  const [activeTab, setActiveTab] = useState('Todos');
 
   useEffect(() => {
     const reportesData = getReportes();
@@ -35,41 +35,40 @@ const Dashboard = () => {
 
     // Location filtering
     if (filters.departamento !== 'Todos') {
-      data = data.filter(d => d.departamento === filters.departamento);
+      data = data.filter(d => (d.departamento || '').toUpperCase() === (filters.departamento || '').toUpperCase());
       if (filters.provincia !== 'Todos') {
-        data = data.filter(d => d.provincia === filters.provincia);
+        data = data.filter(d => (d.provincia || '').toUpperCase() === (filters.provincia || '').toUpperCase());
         if (filters.distrito !== 'Todos') {
-          data = data.filter(d => d.distrito === filters.distrito);
+          data = data.filter(d => (d.distrito || '').toUpperCase() === (filters.distrito || '').toUpperCase());
         }
       }
     }
 
-    // Time filtering (Lógica para botones de tiempo)
+    // Time filtering
     if (filters.rango !== 'Todos') {
       const now = new Date();
-      const reportDate = new Date();
-      
+      const reportDateLimit = new Date();
+
       if (filters.rango === '24h') {
-        reportDate.setHours(now.getHours() - 24);
+        reportDateLimit.setHours(now.getHours() - 24);
       } else if (filters.rango === '7d') {
-        reportDate.setDate(now.getDate() - 7);
+        reportDateLimit.setDate(now.getDate() - 7);
       } else if (filters.rango === '30d') {
-        reportDate.setDate(now.getDate() - 30);
+        reportDateLimit.setDate(now.getDate() - 30);
       }
 
-      data = data.filter(d => new Date(d.fecha_reporte) >= reportDate);
+      data = data.filter(d => new Date(d.fecha_reporte) >= reportDateLimit);
     }
 
     // Layer filtering
     const activeTypes = [];
-    if (filters.netlab) activeTypes.push('Confirmado'); // NETLAB
-    if (filters.noti) activeTypes.push('Sospechoso');   // NOTI
-    if (filters.sivapre) activeTypes.push('Larvas');    // SIVAPRE
-    
-    // Assuming 'SIVAPRE Criaderos' doesn't have a direct 'tipo_reporte'
-    // and we show all for it, or it's a different dataset.
-    // For now, we filter by 'Confirmado' and 'Sospechoso'.
-    if (activeTypes.length > 0) {
+    if (filters.sivapre) activeTypes.push('Larvas');
+    if (filters.noti) activeTypes.push('Sospechoso');
+    if (filters.netlab) activeTypes.push('Confirmado');
+
+    if (activeTypes.length === 0) {
+      data = [];
+    } else {
       data = data.filter(d => activeTypes.includes(d.tipo_reporte));
     }
 
@@ -78,14 +77,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     const newFeatures = peruGeo.features.map(feature => {
-      const depName = feature.properties.NOMBDEP;
-      const depData = filteredData.filter(d => d.departamento === depName);
+      const depName = (feature.properties.NOMBDEP || feature.properties.NOMDEP || '').toUpperCase();
+      const depData = filteredData.filter(d => (d.departamento || '').toUpperCase() === depName);
       const caseCount = depData.length;
-      
-      // Simple risk classification
-      let riskLevel = 0; // No/low risk
-      if (caseCount > 0 && caseCount <= 1) riskLevel = 1; // Moderate risk
-      if (caseCount > 1) riskLevel = 2; // High risk
+
+      let riskLevel = 0;
+      if (caseCount > 0 && caseCount <= 5) riskLevel = 1;
+      if (caseCount > 5) riskLevel = 2;
 
       return {
         ...feature,
@@ -100,11 +98,9 @@ const Dashboard = () => {
     setMapData({ ...peruGeo, features: newFeatures });
   }, [filteredData]);
 
-
   const handleFilterChange = (filterName, value) => {
     const newFilters = { ...filters, [filterName]: value };
 
-    // Reset child filters when a parent is changed
     if (filterName === 'departamento') {
       newFilters.provincia = 'Todos';
       newFilters.distrito = 'Todos';
@@ -121,24 +117,39 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="main-wrapper">
+    <div className="main-wrapper bg-light">
       <Header />
+      <Filters
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onLayerChange={handleLayerChange}
+        ubigeo={ubigeo}
+      />
       <main className="main-content">
-        <Filters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onLayerChange={handleLayerChange}
-          ubigeo={ubigeo}
-        />
-        <div className="content-grid mt-4">
-          <div className="stats-container">
-            <StatsCards data={filteredData} />
+        <div className="container-fluid py-3 px-3 px-md-4">
+          <div className="stats-container mb-4 overflow-hidden">
+            <StatsCards
+              data={filteredData}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           </div>
-          <div className="map-container">
-            <MapView data={mapData} reportes={filteredData} tipoReporte="Todos" selectedDepartamento={filters.departamento} />
-          </div>
-          <div className="side-panel-container">
-            <SidePanel data={filteredData} />
+          <div className="row g-3 g-lg-4">
+            <div className="col-12 col-xl-8">
+              <MapView
+                reportes={filteredData}
+                tipoReporte={activeTab}
+                filters={filters}
+              />
+            </div>
+            <div className="col-12 col-xl-4 d-flex">
+              <div className="w-100 h-100">
+                <SidePanel
+                  data={filteredData}
+                  activeTab={activeTab}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </main>
