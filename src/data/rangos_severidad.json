@@ -1,8 +1,0 @@
-[
-  { "min": 0, "max": 10, "color": "#ffffcc", "label": "0 - 10" },
-  { "min": 11, "max": 30, "color": "#ffeda0", "label": "11 - 30" },
-  { "min": 31, "max": 60, "color": "#fed976", "label": "31 - 60" },
-  { "min": 61, "max": 100, "color": "#feb24c", "label": "61 - 100" },
-  { "min": 101, "max": 200, "color": "#fd8d3c", "label": "101 - 200" },
-  { "min": 201, "max": 9999, "color": "#e31a1c", "label": "200+" }
-]

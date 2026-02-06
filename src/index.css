@@ -291,4 +291,75 @@ body {
     flex-direction: column;
     align-items: flex-start;
   }
+
+}
+
+/* Map Legend Glassmorphism */
+.map-view-container {
+  position: relative;
+}
+
+.map-legend-glass {
+  position: absolute;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  min-width: 170px;
+  pointer-events: auto;
+}
+
+.legend-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #374151;
+}
+
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.6rem;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex-grow: 1;
+}
+
+.legend-status {
+  font-weight: 600;
+  margin-left: 0.4rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .map-legend-glass {
+    bottom: 0.75rem;
+    right: 0.75rem;
+    padding: 0.6rem;
+    min-width: 140px;
+  }
 }

@@ -54,14 +54,14 @@ const StatsCards = ({ data = [], activeTab, onTabChange }) => {
   const counts = useMemo(() => {
     return {
       todos: data.length,
-      larvas: data.filter(d => d.tipo_reporte === 'Larvas').length,
+      sintomatico: data.filter(d => d.tipo_reporte === 'Sintomático').length,
       sospechoso: data.filter(d => d.tipo_reporte === 'Sospechoso').length,
       confirmado: data.filter(d => d.tipo_reporte === 'Confirmado').length,
     };
   }, [data]);
 
   // Scaled values to look more realistic for a high-level dashboard
-  const scale = 5; // A multiplier to make mock counts represent a larger population if they are low
+  const scale = 1; // Datos reales extraídos del JSON poblado
 
   return (
     <div className="d-flex gap-3 overflow-auto pb-2 w-100">
@@ -78,12 +78,12 @@ const StatsCards = ({ data = [], activeTab, onTabChange }) => {
       <StatCard
         iconClass="bi bi-droplet"
         title="Auto-reportes Sintomáticos"
-        value={counts.larvas * scale}
+        value={counts.sintomatico * scale}
         description="Ciudadanos que reportaron síntomas"
         dataSource="SIVAPRE App"
         growth={8}
-        active={activeTab === 'Larvas'}
-        onClick={() => onTabChange('Larvas')}
+        active={activeTab === 'Sintomático'}
+        onClick={() => onTabChange('Sintomático')}
       />
       <StatCard
         iconClass="bi bi-exclamation-triangle"

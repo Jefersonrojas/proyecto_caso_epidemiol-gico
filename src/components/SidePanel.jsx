@@ -20,7 +20,7 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
 
   // Helper for tag naming
   const getTag = (type) => {
-    if (type === 'Larvas') return 'Auto-reporte';
+    if (type === 'Sintomático') return 'Auto-reporte';
     if (type === 'Sospechoso') return 'Caso Sospechoso';
     if (type === 'Confirmado') return 'Caso Confirmado';
     return 'Reporte';
@@ -220,7 +220,7 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
                     <div className="p-3 bg-white rounded-3 border shadow-sm h-100 text-center">
                       <small className="text-muted d-block mb-1" style={{ fontSize: '0.6rem' }}>FUENTE DEL DATO</small>
                       <span className="fw-bold text-primary" style={{ fontSize: '0.85rem' }}>
-                        {selectedReport.tipo_reporte === 'Larvas' ? 'SIVAPRE App' : selectedReport.tipo_reporte === 'Sospechoso' ? 'Sistema NOTI' : 'NETLAB'}
+                        {selectedReport.tipo_reporte === 'Sintomático' ? 'SIVAPRE App' : selectedReport.tipo_reporte === 'Sospechoso' ? 'Sistema NOTI' : 'NETLAB'}
                       </span>
                     </div>
                   </div>
@@ -239,8 +239,8 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
                       <h6 className="mb-1 fw-bold" style={{ fontSize: '0.8rem' }}>Acción Recomendada</h6>
                       <p className="mb-0 text-muted" style={{ fontSize: '0.75rem' }}>
                         {selectedReport.tipo_reporte === 'Confirmado'
-                          ? 'Despliegue inmediato de brigada de fumigación y cerco epidemiológico.'
-                          : 'Seguimiento telefónico y programación de visita domiciliaria en 24h.'}
+                          ? 'Cerco epidemiológico inmediato y seguimiento de contactos estrechos.'
+                          : 'Telemonitoreo diario y brigada de respuesta rápida para triaje.'}
                       </p>
                     </div>
                   </div>

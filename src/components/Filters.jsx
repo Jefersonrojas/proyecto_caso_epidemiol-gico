@@ -69,7 +69,7 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
             value={filters.departamento}
             onChange={(e) => onFilterChange('departamento', e.target.value)}
           >
-            <option value="Todos">Deptos</option>
+            <option value="Todos">Departamentos</option>
             {departamentos.map(dep => <option key={dep} value={dep}>{dep}</option>)}
           </select>
           <select

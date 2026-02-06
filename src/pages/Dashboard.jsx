@@ -5,8 +5,6 @@ import StatsCards from '../components/StatsCards';
 import MapView from '../components/MapView';
 import SidePanel from '../components/SidePanel';
 import { getReportes, getUbigeo } from '../services/dataService';
-import peruGeo from '../assets/peru-geo.json';
-
 const Dashboard = () => {
   const [reportes, setReportes] = useState([]);
   const [ubigeo, setUbigeo] = useState({});
@@ -20,7 +18,6 @@ const Dashboard = () => {
     netlab: true,
   });
   const [filteredData, setFilteredData] = useState([]);
-  const [mapData, setMapData] = useState(peruGeo);
   const [activeTab, setActiveTab] = useState('Todos');
 
   useEffect(() => {
@@ -62,7 +59,7 @@ const Dashboard = () => {
 
     // Layer filtering
     const activeTypes = [];
-    if (filters.sivapre) activeTypes.push('Larvas');
+    if (filters.sivapre) activeTypes.push('Sintomático');
     if (filters.noti) activeTypes.push('Sospechoso');
     if (filters.netlab) activeTypes.push('Confirmado');
 
@@ -75,28 +72,6 @@ const Dashboard = () => {
     setFilteredData(data);
   }, [filters, reportes]);
 
-  useEffect(() => {
-    const newFeatures = peruGeo.features.map(feature => {
-      const depName = (feature.properties.NOMBDEP || feature.properties.NOMDEP || '').toUpperCase();
-      const depData = filteredData.filter(d => (d.departamento || '').toUpperCase() === depName);
-      const caseCount = depData.length;
-
-      let riskLevel = 0;
-      if (caseCount > 0 && caseCount <= 5) riskLevel = 1;
-      if (caseCount > 5) riskLevel = 2;
-
-      return {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          caseCount,
-          riskLevel,
-        },
-      };
-    });
-
-    setMapData({ ...peruGeo, features: newFeatures });
-  }, [filteredData]);
 
   const handleFilterChange = (filterName, value) => {
     const newFilters = { ...filters, [filterName]: value };
