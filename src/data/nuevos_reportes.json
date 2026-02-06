@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "departamento": "Loreto",
+    "distrito": "Punchana",
+    "direccion": "Calle Los Laureles 234",
+    "fecha": "2025-01-15 14:32",
+    "tipo": "Larvas detectadas",
+    "estado": "Nuevo"
+  },
+  {
+    "id": 2,
+    "departamento": "Loreto",
+    "distrito": "Iquitos",
+    "direccion": "Av. Grau 120",
+    "fecha": "2025-01-15 10:12",
+    "tipo": "Caso sospechoso",
+    "estado": "Nuevo"
+  },
+  {
+    "id": 3,
+    "departamento": "Loreto",
+    "distrito": "Belén",
+    "direccion": "Pasaje 10 de Octubre 456",
+    "fecha": "2025-01-14 18:05",
+    "tipo": "Caso confirmado",
+    "estado": "Atendido"
+  }
+]

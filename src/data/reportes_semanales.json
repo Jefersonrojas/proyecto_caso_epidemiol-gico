@@ -1,0 +1,22 @@
+[
+  {
+    "semana": "Semana 1",
+    "sospechosos": 120,
+    "confirmados": 40
+  },
+  {
+    "semana": "Semana 2",
+    "sospechosos": 145,
+    "confirmados": 55
+  },
+  {
+    "semana": "Semana 3",
+    "sospechosos": 170,
+    "confirmados": 68
+  },
+  {
+    "semana": "Semana 4",
+    "sospechosos": 210,
+    "confirmados": 90
+  }
+]

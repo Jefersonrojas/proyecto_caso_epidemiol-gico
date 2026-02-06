@@ -1,0 +1,108 @@
+{
+  "Lima": {
+    "Lima": [
+      "Cercado de Lima",
+      "Ate",
+      "San Juan de Lurigancho",
+      "San Martín de Porres",
+      "Villa El Salvador",
+      "Villa María del Triunfo",
+      "Comas",
+      "Los Olivos",
+      "Miraflores",
+      "San Isidro"
+    ],
+    "Huarochirí": [
+      "Matucana",
+      "San Mateo",
+      "San Jerónimo de Surco"
+    ],
+    "Cañete": [
+      "San Vicente de Cañete",
+      "Asia",
+      "Imperial"
+    ]
+  },
+
+  "Áncash": {
+    "Huaraz": [
+      "Huaraz",
+      "Independencia",
+      "Tarica"
+    ],
+    "Santa": [
+      "Chimbote",
+      "Nuevo Chimbote",
+      "Coishco"
+    ],
+    "Yungay": [
+      "Yungay",
+      "Ranrahirca"
+    ]
+  },
+
+  "La Libertad": {
+    "Trujillo": [
+      "Trujillo",
+      "La Esperanza",
+      "El Porvenir",
+      "Víctor Larco Herrera"
+    ],
+    "Ascope": [
+      "Ascope",
+      "Casa Grande"
+    ]
+  },
+
+  "Arequipa": {
+    "Arequipa": [
+      "Arequipa",
+      "Cayma",
+      "Cerro Colorado",
+      "Yanahuara",
+      "José Luis Bustamante y Rivero"
+    ],
+    "Camaná": [
+      "Camaná",
+      "Samuel Pastor"
+    ]
+  },
+
+  "Cusco": {
+    "Cusco": [
+      "Cusco",
+      "San Sebastián",
+      "San Jerónimo",
+      "Wanchaq"
+    ],
+    "Urubamba": [
+      "Urubamba",
+      "Ollantaytambo",
+      "Yucay"
+    ]
+  },
+
+  "Piura": {
+    "Piura": [
+      "Piura",
+      "Castilla",
+      "Catacaos"
+    ],
+    "Sullana": [
+      "Sullana",
+      "Bellavista"
+    ]
+  },
+
+  "Loreto": {
+    "Maynas": [
+      "Iquitos",
+      "Punchana",
+      "San Juan Bautista",
+      "Belén"
+    ],
+    "Alto Amazonas": [
+      "Yurimaguas"
+    ]
+  }
+}
