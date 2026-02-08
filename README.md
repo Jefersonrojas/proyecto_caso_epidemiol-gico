@@ -72,8 +72,9 @@ Este proyecto integra con éxito la ingeniería de software moderna con las nece
 Para garantizar la disponibilidad del sistema, se han configurado:
 - **`vercel.json`**: Reglas de redirección para Single Page Applications (SPA).
 - **`.gitignore`**: Exclusión de archivos de entorno y dependencias para un repositorio limpio.
+- A continaucion puede visualizar el **[Despligue del Dashboard](https://proyecto-caso-epidemiol-gico-80wwkf4q1.vercel.app/)** 
 
 ---
-**Desarrollado por el Alumno: [Tu Nombre]**
-**Curso: Desarrollo de Sistemas Epidemiológicos**
+**Desarrollado por el Alumno: [Heiser Jeferson Rojas Burgos]**
+
 **2026**
