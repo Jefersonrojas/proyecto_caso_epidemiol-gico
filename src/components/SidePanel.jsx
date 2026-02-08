@@ -8,17 +8,17 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
   const [isExporting, setIsExporting] = useState(false);
   const modalContentRef = useRef(null);
 
-  // Use the real data to show in the side panel
+
   const reports = useMemo(() => {
     let filtered = data;
     if (activeTab !== 'Todos') {
       filtered = data.filter(r => r.tipo_reporte === activeTab);
     }
-    // Take the last 10 for list display
+
     return filtered.slice(-10).reverse();
   }, [data, activeTab]);
 
-  // Helper for tag naming
+
   const getTag = (type) => {
     if (type === 'Sintomático') return 'Auto-reporte';
     if (type === 'Sospechoso') return 'Caso Sospechoso';
@@ -26,14 +26,14 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
     return 'Reporte';
   };
 
-  // Helper for severity color
+
   const getSeverityColor = (type) => {
     if (type === 'Confirmado') return 'bg-danger';
     if (type === 'Sospechoso') return 'bg-warning text-dark';
     return 'bg-primary';
   };
 
-  // Real PDF Generation logic
+
   const handleDownloadPDF = async () => {
     if (!modalContentRef.current || !selectedReport) return;
 
@@ -41,12 +41,12 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
     try {
       const element = modalContentRef.current;
 
-      // Temporary style adjustments to ensure clean capture
+
       const originalStyle = element.style.cssText;
-      element.style.borderRadius = '0'; // Flat for PDF
+      element.style.borderRadius = '0';
 
       const canvas = await html2canvas(element, {
-        scale: 2, // Higher quality
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#f8f9fa'
@@ -67,7 +67,7 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
       pdf.save(fileName);
 
     } catch (err) {
-      console.error('Error generating PDF:', err);
+      console.error('Error al generar PDF:', err);
       alert('Hubo un error al generar el PDF. Por favor intente de nuevo.');
     } finally {
       setIsExporting(false);
@@ -169,7 +169,7 @@ const SidePanel = ({ data = [], activeTab = 'Todos' }) => {
             style={{ width: '100%', maxWidth: '500px' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Contenedor que se convertirá en PDF */}
+            {/* Convertir en PDF */}
             <div ref={modalContentRef} className="bg-light">
               {/* Modal Header */}
               <div className={`p-4 text-white d-flex flex-column gap-2 ${selectedReport.tipo_reporte === 'Confirmado' ? 'bg-danger' : selectedReport.tipo_reporte === 'Sospechoso' ? 'bg-warning text-dark' : 'bg-primary'}`}>

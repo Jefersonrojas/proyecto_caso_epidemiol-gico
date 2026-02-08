@@ -50,7 +50,7 @@ const StatCard = ({ iconClass, title, value, description, dataSource, growth, ac
 };
 
 const StatsCards = ({ data = [], activeTab, onTabChange }) => {
-  // Calculate dynamic counts based on the filtered data provided by Dashboard
+
   const counts = useMemo(() => {
     return {
       todos: data.length,
@@ -60,8 +60,8 @@ const StatsCards = ({ data = [], activeTab, onTabChange }) => {
     };
   }, [data]);
 
-  // Scaled values to look more realistic for a high-level dashboard
-  const scale = 1; // Datos reales extraídos del JSON poblado
+
+  const scale = 1;
 
   return (
     <div className="d-flex gap-3 overflow-auto pb-2 w-100">

@@ -2,7 +2,7 @@ import json
 import random
 from datetime import datetime, timedelta
 
-# List of locations
+# Lista de locaciones
 locations = [
     # (Dept, Prov, Dist, Lat, Lon, Weight)
     ("LIMA", "LIMA", "CERCADO DE LIMA", -12.0464, -77.0428, 0.4),
@@ -23,13 +23,10 @@ states = ["Confirmado", "En investigación", "Recuperado", "Fallecido"]
 sources = {"Sintomático": "SIVAPRE", "Sospechoso": "NOTI", "Confirmado": "NETLAB"}
 
 data = []
-# Lima Target: ~900 cases (to be red > 761)
-# Others: fewer
 
 def get_location():
-    # Weighted choice to favor Lima
     r = random.random()
-    if r < 0.7: # 70% chance for Lima
+    if r < 0.7: 
         return random.choice([l for l in locations if l[0] == "LIMA"])
     else:
         return random.choice([l for l in locations if l[0] != "LIMA"])
@@ -40,8 +37,7 @@ for i in range(1, 1400):
     source = sources[t]
     date = datetime(2026, 2, 6) - timedelta(days=random.randint(0, 30))
     
-    # Add JITTER to avoid exact overlap if we want clusters
-    # But user asked for "uno solo", so let's keep it close
+    
     lat = loc[3] + random.uniform(-0.02, 0.02)
     lon = loc[4] + random.uniform(-0.02, 0.02)
     

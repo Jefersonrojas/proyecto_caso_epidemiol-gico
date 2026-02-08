@@ -19,7 +19,7 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
   };
 
   return (
-    <div className="bg-white border-bottom px-3 px-md-4 py-2 d-flex align-items-center gap-3 gap-md-4 flex-wrap position-relative shadow-sm" style={{ zIndex: 1001 }}>
+    <div className="bg-white border-bottom px-3 px-md-4 py-2 d-flex align-items-center gap-2 gap-md-4 flex-wrap position-relative shadow-sm" style={{ zIndex: 1001, rowGap: '0.75rem' }}>
       {/* Rango de Fechas */}
       <div className="d-flex flex-column position-relative">
         <label className="text-muted fw-bold mb-1" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -35,7 +35,7 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
                 <button
                   key={label}
                   className={`btn btn-sm border-0 ${isActive ? 'btn-primary shadow-sm' : 'text-secondary'}`}
-                  style={{ fontSize: '0.65rem', borderRadius: '6px', padding: '0.25rem 0.5rem', fontWeight: isActive ? '600' : '400' }}
+                  style={{ fontSize: '0.62rem', borderRadius: '6px', padding: '0.25rem 0.45rem', fontWeight: isActive ? '600' : '400' }}
                   onClick={() => handleRangoChange(val)}
                 >
                   {label === '24h' ? '24h' : label === '7d' ? '7d' : label}
@@ -58,23 +58,23 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
       <div className="vr d-none d-lg-block my-2 opacity-10"></div>
 
       {/* Ubicacion */}
-      <div className="d-flex flex-column flex-grow-1 flex-md-grow-0">
+      <div className="d-flex flex-column flex-grow-1 flex-md-grow-0" style={{ minWidth: '280px' }}>
         <label className="text-muted fw-bold mb-1" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
           <i className="bi bi-geo-alt me-1"></i> Ubicación
         </label>
         <div className="d-flex gap-2 flex-wrap flex-md-nowrap">
           <select
-            className="form-select form-select-sm border shadow-sm"
-            style={{ minWidth: '160px', width: 'auto', fontSize: '0.75rem', borderRadius: '8px' }}
+            className="form-select form-select-sm border shadow-sm flex-grow-1"
+            style={{ minWidth: '120px', fontSize: '0.75rem', borderRadius: '8px' }}
             value={filters.departamento}
             onChange={(e) => onFilterChange('departamento', e.target.value)}
           >
-            <option value="Todos">Departamentos</option>
+            <option value="Todos">Deptos</option>
             {departamentos.map(dep => <option key={dep} value={dep}>{dep}</option>)}
           </select>
           <select
-            className="form-select form-select-sm border shadow-sm"
-            style={{ width: '120px', fontSize: '0.75rem', borderRadius: '8px' }}
+            className="form-select form-select-sm border shadow-sm flex-grow-1"
+            style={{ minWidth: '100px', fontSize: '0.75rem', borderRadius: '8px' }}
             value={filters.provincia}
             onChange={(e) => onFilterChange('provincia', e.target.value)}
             disabled={filters.departamento === 'Todos'}
@@ -83,8 +83,8 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
             {provincias.map(prov => <option key={prov} value={prov}>{prov}</option>)}
           </select>
           <select
-            className="form-select form-select-sm border shadow-sm"
-            style={{ width: '120px', fontSize: '0.75rem', borderRadius: '8px' }}
+            className="form-select form-select-sm border shadow-sm flex-grow-1"
+            style={{ minWidth: '100px', fontSize: '0.75rem', borderRadius: '8px' }}
             value={filters.distrito}
             onChange={(e) => onFilterChange('distrito', e.target.value)}
             disabled={filters.provincia === 'Todos'}
@@ -99,18 +99,18 @@ const Filters = ({ filters, onFilterChange, onLayerChange, ubigeo }) => {
 
       {/* Capas del Mapa */}
       <div className="d-flex flex-column">
-        <label className="text-muted fw-bold mb-1" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fuentes de Información</label>
-        <div className="d-flex gap-2 gap-md-3 align-items-center flex-wrap">
+        <label className="text-muted fw-bold mb-1" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Fuentes</label>
+        <div className="d-flex gap-3 align-items-center flex-wrap">
           <div className="form-check form-switch d-flex align-items-center gap-2 mb-0">
-            <input className="form-check-input mt-0" type="checkbox" id="sw1" checked={filters.sivapre} onChange={(e) => onLayerChange('sivapre', e.target.checked)} style={{ width: '2rem', height: '1rem' }} />
+            <input className="form-check-input mt-0" type="checkbox" id="sw1" checked={filters.sivapre} onChange={(e) => onLayerChange('sivapre', e.target.checked)} style={{ width: '1.8rem', height: '0.9rem' }} />
             <label className="form-check-label text-dark fw-semibold" htmlFor="sw1" style={{ fontSize: '0.65rem' }}>CIVIL</label>
           </div>
           <div className="form-check form-switch d-flex align-items-center gap-2 mb-0">
-            <input className="form-check-input mt-0" type="checkbox" id="sw2" checked={filters.noti} onChange={(e) => onLayerChange('noti', e.target.checked)} style={{ width: '2rem', height: '1rem' }} />
+            <input className="form-check-input mt-0" type="checkbox" id="sw2" checked={filters.noti} onChange={(e) => onLayerChange('noti', e.target.checked)} style={{ width: '1.8rem', height: '0.9rem' }} />
             <label className="form-check-label text-dark fw-semibold" htmlFor="sw2" style={{ fontSize: '0.65rem' }}>NOTI</label>
           </div>
           <div className="form-check form-switch d-flex align-items-center gap-2 mb-0">
-            <input className="form-check-input mt-0" type="checkbox" id="sw3" checked={filters.netlab} onChange={(e) => onLayerChange('netlab', e.target.checked)} style={{ width: '2rem', height: '1rem' }} />
+            <input className="form-check-input mt-0" type="checkbox" id="sw3" checked={filters.netlab} onChange={(e) => onLayerChange('netlab', e.target.checked)} style={{ width: '1.8rem', height: '0.9rem' }} />
             <label className="form-check-label text-dark fw-semibold" htmlFor="sw3" style={{ fontSize: '0.65rem' }}>NETLAB</label>
           </div>
         </div>

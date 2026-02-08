@@ -30,7 +30,7 @@ const Dashboard = () => {
   useEffect(() => {
     let data = reportes;
 
-    // Location filtering
+
     if (filters.departamento !== 'Todos') {
       data = data.filter(d => (d.departamento || '').toUpperCase() === (filters.departamento || '').toUpperCase());
       if (filters.provincia !== 'Todos') {
@@ -41,7 +41,7 @@ const Dashboard = () => {
       }
     }
 
-    // Time filtering
+
     if (filters.rango !== 'Todos') {
       const now = new Date();
       const reportDateLimit = new Date();
@@ -57,7 +57,7 @@ const Dashboard = () => {
       data = data.filter(d => new Date(d.fecha_reporte) >= reportDateLimit);
     }
 
-    // Layer filtering
+
     const activeTypes = [];
     if (filters.sivapre) activeTypes.push('Sintomático');
     if (filters.noti) activeTypes.push('Sospechoso');

@@ -39,18 +39,18 @@ const WeeklyTrend = ({ reportes = [] }) => {
       d.setDate(today.getDate() - i);
       const dateStr = formatDate(d);
 
-      // Label like "01 Feb"
+
       const label = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
       labels.push(label);
 
-      // Filter reports for this specific day
+
       const dailyReports = reportes.filter(r => r.fecha_reporte.startsWith(dateStr));
 
       sospechosoPoints.push(dailyReports.filter(r => r.tipo_reporte === 'Sospechoso').length);
       confirmadoPoints.push(dailyReports.filter(r => r.tipo_reporte === 'Confirmado').length);
     }
 
-    // Fallback if data is empty (for demo purposes)
+
     const finalSospechoso = sospechosoPoints.some(v => v > 0) ? sospechosoPoints : [40, 55, 45, 60, 50, 75, 65];
     const finalConfirmado = confirmadoPoints.some(v => v > 0) ? confirmadoPoints : [10, 15, 8, 20, 12, 18, 14];
 

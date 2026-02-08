@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, useMap, CircleMarker, Popup } from 'r
 import 'leaflet/dist/leaflet.css';
 import { obtenerColor, contarCasosPorDepartamento, obtenerCasosPorProvincia, obtenerLeyenda } from '../utils/mapUtils';
 
-// Helper component to handle zoom and bounds
+
 function ZoomHandler({ bounds }) {
   const map = useMap();
   useEffect(() => {
@@ -20,16 +20,15 @@ const MapView = ({ filters, reportes, tipoReporte }) => {
   const [lastZoomBounds, setLastZoomBounds] = useState(null);
 
   const selectedDepartamento = filters.departamento;
-  // tipoReporte comes from activeTab in Dashboard (StatsCards)
 
   useEffect(() => {
-    // Load departments
+    // departamentos
     fetch('/geo/peru_departamentos.geojson')
       .then((res) => res.json())
       .then((data) => setGeoData(data))
       .catch((err) => console.error('Error loading department geojson:', err));
 
-    // Load provinces
+    // provincias
     fetch('/geo/peru_provincias.geojson')
       .then((res) => res.json())
       .then((data) => setProvGeoData(data))
@@ -49,7 +48,7 @@ const MapView = ({ filters, reportes, tipoReporte }) => {
     return obtenerCasosPorProvincia(selectedDepartamento, reportes, tipoReporte, activeLayers);
   }, [selectedDepartamento, reportes, tipoReporte, activeLayers]);
 
-  // Normalize string for comparison
+  // 
   const normalize = (str) => {
     if (!str) return '';
     return str.toString().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
@@ -185,7 +184,7 @@ const MapView = ({ filters, reportes, tipoReporte }) => {
               radius={4}
               pathOptions={{
                 fillColor: report.tipo_reporte === 'Confirmado' ? '#ef4444' : report.tipo_reporte === 'Sospechoso' ? '#ffaa00' : '#3b82f6',
-                color: '#1f2937', // Borde oscuro para que resalte como en la imagen de referencia
+                color: '#1f2937',
                 weight: 2,
                 fillOpacity: 1
               }}
