@@ -6,7 +6,7 @@ A continuación, le  presento el desarrollo y la sustentacion de  este proyecto.
 
 ---
 
-## 1. Arquitectura del Proyecto y Tecnologías Usadas
+## Arquitectura del Proyecto y Tecnologías Usadas
 
 El proyecto esta echo con **Componentes Funcionales de React** bajo el ecosistema de **Vite**. Escogi estas  herramientas debido a su alto rendimiento y eficiencia en el manejo del estado global.
 
@@ -17,67 +17,63 @@ El proyecto esta echo con **Componentes Funcionales de React** bajo el ecosistem
 
 ---
 
-## 2. Análisis Detallado de Archivos y Carpetas
+##  Análisis Detallado de Archivos y Carpetas
 
 ### `src/data/` (Capa de Datos)
-Aquí reside la "fuente de la verdad" del sistema:
-- **`reportes.json`**: Base de datos epidemiológica con +1600 registros. Cada entrada incluye `id_reporte`, `tipo_reporte` (Sintomático, Sospechoso, Confirmado), coordenadas (latitud y longitud), y jerarquía de UBIGEO.
+Aquí estan los datos creados del sistema en este caso decidí  enfocarme solo  en algunos departamentos del peru para la visualizacion de datos en el mapa :
+- **`reportes.json`**: Base de datos epidemiológica con  mas de 1600 registros. Cada entrada incluye `id_reporte`, `tipo_reporte` (Sintomático, Sospechoso, Confirmado), coordenadas (latitud y longitud), y jerarquía de UBIGEO.
 - **`ubigeo_peru.json`**: Diccionario jerárquico que permite que los filtros geográficos sean dinámicos y dependientes entre sí.
 
 ### `src/services/` (Capa de Servicio)
-- **`dataService.js`**: Implementa el patrón *Service*. Centraliza el acceso a los datos, permitiendo que en el futuro la transición de JSON estático a una API REST sea transparente para los componentes.
+- **`dataService.js`**: Implementa el patrón *Service*. Permite el acceso a los datos,para que en el futuro la transición de JSON estático a una API REST sea transparente para los componentes.
 
-### 📁 `src/utils/` (Capa de Lógica de Negocio)
+###  `src/utils/` 
 - **`mapUtils.js`**: Contiene la inteligencia del mapa.
     - `contarCasosPorDepartamento()`: Agrupa y totaliza los reportes por región geográfica.
-    - `obtenerColor()`: Algoritmo de semaforización que asigna tonalidades cromáticas basadas en la densidad de casos (Escala de severidad).
+    - `obtenerColor()`: Este algoritmo de semaforización nos sirve  para dar las tonalidades cromáticas basadas en la densidad de casos.
+  
+###  `public/geo/`
+En esta carpeta estan  los archivos GeoJSON (peru_departamentos.geojson y peru_provincias.geojson), estos archivos son muy importantes  ya que me dan los polígonos  para  dibujar las  fronteras de las regiones y darle el color correspondiente a cada departamento de acuerdo a la gravedad del caso. Cabe recalcar que los datos de los archivos los descargue de github.
 
 ---
 
-## 🔍 3. Extracción y Flujo de Datos (Data Pipeline)
+##  Extracción y Flujo de Datos 
 
 El flujo de información se gestiona mediante un ciclo de vida unidireccional:
 
-1.  **Ingesta**: Carga inicial de datos mediante el servicio centralizado.
-2.  **Filtrado Dinámico**: El componente `Dashboard.jsx` utiliza un estado de filtros que, al cambiar, dispara una nueva ejecución de filtrado sobre el dataset original.
+1.  **Toma**: Carga inicial de datos mediante el servicio centralizado.
+2.  **Filtrado Dinámico**: El componente `Dashboard.jsx` utiliza un estado de filtros que, al cambiar da una nueva ejecución de filtrado sobre el dataset original.
 3.  **Sincronización de Estado**: Los datos filtrados se distribuyen vía *props* a todos los componentes visuales simultáneamente.
 
 ---
 
-## 🗺️ 4. Componentes Visuales
+##  Componentes Visuales
 
-- **`MapView.jsx`**: Renderiza el mapa interactivo. Utiliza capas de calor y marcadores individuales con popups informativos.Usa los archivos GeoJSON para dibujar los bordes de los departamentos. Dibuja marcadores geográficos individuales con popups interactivos. Gestiona el "Zoom" inteligente: si eliges un departamento, el mapa va directamente hacia esa región.
-- **`StatsCards.jsx`**: Paneles dinámicos que resumen los indicadores clave de rendimiento (KPIs) en tiempo real. Los 4 cuadros superiores. Hacen cálculos rápidos (sumas) del total de casos filtrados para dar una visión macro del estado del país.
-- **`SidePanel.jsx`**: Para visualizar los  registros individuales, añadi la funcion que permite exportación a PDF mediante las librerías `jsPDF` y `html2canvas`.Es la barra lateral derecha que uestra una lista de los 10 reportes más recientes.
-- **`WeeklyTrend.jsx`**:Genera el gráfico lineal al final del panel lateral. Analiza las fechas de los reportes para mostrar si la curva de contagios está subiendo o bajando en los últimos 7 días.
-- **`Header.jsx`**: La barra superior. Muestra el nombre del sistema (SIVAPRE) y los iconos de perfil. Da contexto al usuario sobre dónde se encuentra.
+- **`MapView.jsx`**:  Usa capas de calor y marcadores individuales con popups informativos y gestiona  los archivos GeoJSON para dibujar los bordes de los departamentos.
+- **`StatsCards.jsx`**: Son los 4 cuadros superiores. Hacen sumas del total de casos filtrados para dar una visión macro del estado del país.
+- **`SidePanel.jsx`**: Para visualizar los  registros individuales, añadi la funcion que permite exportación a PDF mediante las librerías `jsPDF` y `html2canvas`.Es la barra lateral derecha que muestra una lista de los 10 reportes más recientes.
+- **`WeeklyTrend.jsx`**:Genera el gráfico lineal al final del panel lateral y analiza las fechas de los reportes para mostrar si la curva de contagios está subiendo o bajando en los últimos 7 días.
+- **`Header.jsx`**:Es la barra superior que muestra el nombre del sistema (SIVAPRE) y los iconos de perfil
 - **`Filters.jsx`**: Contiene la lógica de los menús desplegables y interruptores. Cuando cambias un filtro, este componente emite un evento que el Dashboard escucha para actualizar todo el mapa.
 
 
 ---
 
-## 🎨 5. Diseño y Usabilidad
 
-Se ha aplicado un enfoque de **Diseño Moderno y Responsivo**:
-- **Estética Premium**: Uso de gradientes, sombras suaves y efectos de desenfoque de fondo (*Backdrop Blur*).
-- **Accesibilidad**: Tipografía optimizada y contrastes de color validados para facilitar la lectura de datos críticos.
+##  . Conclusión del Desarrollo
 
----
-
-## 🚀 6. Conclusión del Desarrollo
-
-Este proyecto integra con éxito la ingeniería de software moderna con las necesidades de la salud pública. La estructura modular garantiza que el sistema sea escalable, mantenible y funcional para la toma de decisiones basada en datos.
+Este proyecto cumple con los requisitos requeridos con una estructura modular que  garantiza que el sistema sea escalable, mantenible y funcional para la toma de decisiones basada en datos.
 
 ---
 
-## ⚡ 7. Preparación para Despliegue (DevOps)
+## Despliegue 
 
-Para garantizar la disponibilidad del sistema, se han configurado:
+Para garantizar la disponibilidad del sistema, decidi desplegarlo en vercel :
 - **`vercel.json`**: Reglas de redirección para Single Page Applications (SPA).
 - **`.gitignore`**: Exclusión de archivos de entorno y dependencias para un repositorio limpio.
 - A continaucion puede visualizar el **[Despligue del Dashboard](https://proyecto-caso-epidemiol-gico-80wwkf4q1.vercel.app/)** 
 
 ---
-**Desarrollado por el Alumno: [Heiser Jeferson Rojas Burgos]**
+**Desarrollado por : Heiser Jeferson Rojas Burgos**
 
-**2026**
+
