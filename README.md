@@ -71,7 +71,7 @@ Este proyecto cumple con los requisitos requeridos con una estructura modular qu
 Para garantizar la disponibilidad del sistema, decidi desplegarlo en vercel :
 - **`vercel.json`**: Reglas de redirección para Single Page Applications (SPA).
 - **`.gitignore`**: Exclusión de archivos de entorno y dependencias para un repositorio limpio.
-- A continaucion puede visualizar el **[Despligue del Dashboard](https://proyecto-caso-epidemiol-gico-80wwkf4q1.vercel.app/)** 
+- A continaucion puede visualizar el **[Despligue del Dashboard](https://proyecto-caso-epidemiol-gico.vercel.app/)** 
 
 ---
 **Desarrollado por : Heiser Jeferson Rojas Burgos**
