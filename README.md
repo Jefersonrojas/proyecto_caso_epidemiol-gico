@@ -46,10 +46,13 @@ El flujo de información se gestiona mediante un ciclo de vida unidireccional:
 
 ## 🗺️ 4. Componentes Visuales
 
-- **`MapView.jsx`**: Renderiza el mapa interactivo. Utiliza capas de calor y marcadores individuales con popups informativos.
-- **`StatsCards.jsx`**: Paneles dinámicos que resumen los indicadores clave de rendimiento (KPIs) en tiempo real.
-- **`SidePanel.jsx`**: Visualizador de registros individuales, añadi la funcion que permite exportación a PDF mediante las librerías `jsPDF` y `html2canvas`.
-- **`WeeklyTrend.jsx`**: Análisis de series temporales para observar la evolución de la pandemia en los últimos 7 días.
+- **`MapView.jsx`**: Renderiza el mapa interactivo. Utiliza capas de calor y marcadores individuales con popups informativos.Usa los archivos GeoJSON para dibujar los bordes de los departamentos. Dibuja marcadores geográficos individuales con popups interactivos. Gestiona el "Zoom" inteligente: si eliges un departamento, el mapa va directamente hacia esa región.
+- **`StatsCards.jsx`**: Paneles dinámicos que resumen los indicadores clave de rendimiento (KPIs) en tiempo real. Los 4 cuadros superiores. Hacen cálculos rápidos (sumas) del total de casos filtrados para dar una visión macro del estado del país.
+- **`SidePanel.jsx`**: Para visualizar los  registros individuales, añadi la funcion que permite exportación a PDF mediante las librerías `jsPDF` y `html2canvas`.Es la barra lateral derecha que uestra una lista de los 10 reportes más recientes.
+- **`WeeklyTrend.jsx`**:Genera el gráfico lineal al final del panel lateral. Analiza las fechas de los reportes para mostrar si la curva de contagios está subiendo o bajando en los últimos 7 días.
+- **`Header.jsx`**: La barra superior. Muestra el nombre del sistema (SIVAPRE) y los iconos de perfil. Da contexto al usuario sobre dónde se encuentra.
+- **`Filters.jsx`**: Contiene la lógica de los menús desplegables y interruptores. Cuando cambias un filtro, este componente emite un evento que el Dashboard escucha para actualizar todo el mapa.
+
 
 ---
 
